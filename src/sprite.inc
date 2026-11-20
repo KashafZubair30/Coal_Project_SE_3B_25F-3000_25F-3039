@@ -1,6 +1,5 @@
-; sprite.inc  -  Module 4: DrawSprite and the art conversion tables
 ; BuildArtTables
-;   purpose : build the letter -> colour table (chartab) from chartab_init and convert ALL art (letters) to palette indices in place with XLAT. Must run exactly once at start-up (a second run would turn every pixel transparent)
+;   purpose : build the letter from colour table (chartab) from chartab_init
 ;   inputs  : none (reads chartab_init, art_start  art_end)
 ;   outputs : chartab filled; every art byte replaced by its palette index
 ;   changes : none (pusha/popa, ES saved)
@@ -38,11 +37,13 @@ BuildArtTables:
     pop  es
     popa
     ret
-; DrawSprite(x, y, address, flags)
-;   purpose : draw a 16x16 or 16x32 sprite, colour index 0 = transparent, clipped on all four sides. flags: bit 0 = mirror left/right, bit 1 = tall (32 rows), bit 2 = half-transparent (checkerboard)
+
+; DrawSprite
+;   purpose : draw a 16x16 or 16x32 sprite
 ;   inputs  : [bp+10] = x, [bp+8] = y (signed words), [bp+6] = address of the sprite data, [bp+4] = flags
 ;   outputs : sprite drawn into the frame buffer
 ;   changes : none (pusha/popa, ES saved); removes its 4 parameters (ret 8)
+
 DrawSprite:
     push bp
     mov  bp, sp
