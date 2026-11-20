@@ -1,19 +1,16 @@
-; video.inc  -  Module 2: video mode, palette, PutPixel, FillRect, text
-; Every drawing procedure loads ES from [fb_seg] itself and restores it, and
-; preserves all registers it does not return.  Parameters are pushed in the order
-; written in the header; the procedure removes them with RET n.
 ; InitVideo
-;   purpose : switch to VGA mode 13h, read the ROM 8x8 font pointer, load our own palette (index 16 and up)
+;   purpose : switch to VGA mode 13h
 ;   inputs  : none
 ;   outputs : font_seg and font_off set; video mode 13h active
 ;   changes : none (pusha/popa, ES saved)
+
 InitVideo:
     pusha
     push es
     mov  ax, 0013h
     int  10h
     mov  ax, 1130h              ; get font pointer
-    mov  bh, 03h                ; ROM 8x8 font (characters 0..127)
+    mov  bh, 03h                ; ROM 8x8 font 
     push bp
     int  10h
     mov  [font_off], bp
@@ -24,7 +21,7 @@ InitVideo:
     mov  dx, 3C8h               ; DAC write index
     mov  al, PAL_FIRST
     out  dx, al
-    inc  dx                     ; 3C9h data port
+    inc  dx                     
     mov  si, palette
     mov  cx, PAL_COUNT*3
     cld
@@ -32,11 +29,13 @@ InitVideo:
     pop  es
     popa
     ret
-; PutPixel(x, y, colour)
+
+; PutPixel
 ;   purpose : write one pixel into the frame buffer, clipped to the screen
 ;   inputs  : [bp+8] = x, [bp+6] = y (signed words), [bp+4] = colour (low byte)
 ;   outputs : one pixel in the frame buffer (nothing when outside the screen)
 ;   changes : none (AX, BX, ES are saved); removes its 3 parameters (ret 6)
+
 PutPixel:
     push bp
     mov  bp, sp
@@ -51,9 +50,9 @@ PutPixel:
     jae  .done
     mov  es, [fb_seg]
     mov  ax, bx
-    shl  bx, 8                  ; y*256
-    shl  ax, 6                  ; y*64
-    add  bx, ax                 ; y*320
+    shl  bx, 8                  
+    shl  ax, 6                  
+    add  bx, ax                
     add  bx, [bp+8]
     mov  al, [bp+4]
     mov  [es:bx], al
@@ -63,20 +62,22 @@ PutPixel:
     pop  ax
     pop  bp
     ret  6
-; FillRect(x, y, w, h, colour)
-;   purpose : filled rectangle in the frame buffer, clipped to the screen (REP STOSB per row)
+
+; FillRect
+;   purpose : filled rectangle in the frame, clipped to the screen 
 ;   inputs  : [bp+12] = x, [bp+10] = y, [bp+8] = w, [bp+6] = h (signed words), [bp+4] = colour
-;   outputs : rectangle drawn into the frame buffer
+;   outputs : rectangle drawn into the frame 
 ;   changes : none (pusha/popa, ES saved); removes its 5 parameters (ret 10)
+
 FillRect:
     push bp
     mov  bp, sp
     pusha
     push es
     mov  es, [fb_seg]
-    mov  si, [bp+12]            ; x0
+    mov  si, [bp+12]           
     mov  bx, si
-    add  bx, [bp+8]             ; x1 = x + w
+    add  bx, [bp+8]             
     test si, si
     jns  .x0ok
     xor  si, si
@@ -123,17 +124,19 @@ FillRect:
     popa
     pop  bp
     ret  10
-; DrawChar(x, y, char, colour, scale)
-;   purpose : draw one 8x8 ROM-font glyph, each font pixel scaled to scale x scale
+
+; DrawChar
+;   purpose : draw one 8x8 glyph, each font pixel scaled to scale x scale
 ;   inputs  : [bp+12] = x, [bp+10] = y, [bp+8] = character code, [bp+6] = colour, [bp+4] = scale
 ;   outputs : glyph drawn into the frame buffer
 ;   changes : none (pusha/popa, ES saved); removes its 5 parameters (ret 10)
+
 DrawChar:
     push bp
     mov  bp, sp
     pusha
     push es
-    sub  sp, 4                  ; [bp-20] = cur_y   [bp-22] = cur_x   (see below)
+    sub  sp, 4                  ; [bp-20] = cur_y   [bp-22] = cur_x  
     mov  si, [bp+8]
     and  si, 00FFh
     shl  si, 3                  ; 8 bytes per glyph
@@ -141,7 +144,7 @@ DrawChar:
     mov  es, [font_seg]
     mov  ax, [bp+10]
     mov  [bp-20], ax
-    xor  bx, bx                 ; font row 0..7
+    xor  bx, bx                 ; font row 
 .rowloop:
     mov  dl, [es:si+bx]
     mov  ax, [bp+12]
@@ -171,23 +174,27 @@ DrawChar:
     popa
     pop  bp
     ret  10
-; DrawText(x, y, ptr, colour, scale)
-;   purpose : draw a zero-terminated string with DrawChar, 8 x scale pixels per character
+
+; DrawText
+;   purpose : draw a zero terminated string with DrawChar, 8 x scale pixels per character
 ;   inputs  : [bp+12] = x, [bp+10] = y, [bp+8] = address of the string, [bp+6] = colour, [bp+4] = scale
 ;   outputs : string drawn into the frame buffer
-;   changes : none (AX and BX are saved); removes its 5 parameters (ret 10). It advances its own copy of x on the stack
+;   changes : none (AX, BX, SI are saved); removes its 5 parameters (ret 10). Uses SI as the running x.
+
 DrawText:
     push bp
     mov  bp, sp
     push ax
     push bx
+    push si
+    mov  si, [bp+12]            ; SI = running x 
     mov  bx, [bp+8]
 .next:
     mov  al, [bx]
     test al, al
     jz   .done
     xor  ah, ah
-    push word [bp+12]
+    push si
     push word [bp+10]
     push ax
     push word [bp+6]
@@ -195,19 +202,22 @@ DrawText:
     call DrawChar
     mov  ax, [bp+4]
     shl  ax, 3
-    add  [bp+12], ax            ; advance x (the pushed parameter is ours to change)
+    add  si, ax                 ; advance x
     inc  bx
     jmp  .next
 .done:
+    pop  si
     pop  bx
     pop  ax
     pop  bp
     ret  10
-; DrawTextC(y, ptr, colour, scale)
+
+; DrawTextC
 ;   purpose : draw a zero-terminated string centred horizontally: x = (320 - width) / 2
 ;   inputs  : [bp+10] = y, [bp+8] = address of the string, [bp+6] = colour, [bp+4] = scale
 ;   outputs : string drawn into the frame buffer
 ;   changes : none (AX, BX, DX are saved); removes its 4 parameters (ret 8)
+
 DrawTextC:
     push bp
     mov  bp, sp
@@ -239,11 +249,13 @@ DrawTextC:
     pop  ax
     pop  bp
     ret  8
-; FormatNum(low, high, digits, dest)
-;   purpose : convert a 32-bit number to zero-padded ASCII by repeated division by 10 (remainders are pushed, then popped in reverse order)
-;   inputs  : [bp+10] = low word, [bp+8] = high word, [bp+6] = number of digits, [bp+4] = address of the buffer
+
+; FormatNum
+;   purpose : convert a 32-bit number to ASCII by repeated division by 10 
+;   inputs  : [bp+10] = low word, [bp+8] = high word, [bp+6] = number of digits, [bp+4] = address of buffer
 ;   outputs : buffer holds the digits followed by a 0 byte
 ;   changes : none (pusha/popa); removes its 4 parameters (ret 8)
+
 FormatNum:
     push bp
     mov  bp, sp
@@ -251,6 +263,8 @@ FormatNum:
     mov  ax, [bp+10]
     mov  dx, [bp+8]
     mov  si, [bp+6]
+    test si, si
+    jz   .finish                ; safety: 0 digits so nothing to print
     mov  bx, 10
 .divloop:
     mov  di, ax                 ; DI = low word
@@ -271,6 +285,7 @@ FormatNum:
     mov  [di], al
     inc  di
     loop .poploop
+.finish:
     mov  byte [di], 0
     popa
     pop  bp
