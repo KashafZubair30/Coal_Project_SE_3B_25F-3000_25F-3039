@@ -1,4 +1,3 @@
-; constants.inc  -  Module 1: all named constants (screen, tiles, keys, physics)
 SCREEN_W        equ 320
 SCREEN_H        equ 200
 VIEW_H          equ 192             ; 12 map rows * 16 ; bottom 8 pixel rows stay black
@@ -15,10 +14,11 @@ HUD_H           equ 16
 GROUND_Y        equ 160             ; feet y when standing on row 9
 POLE_X          equ 56*TILE
 POLE_MARIO_X    equ POLE_X-8        ; Mario snaps here while sliding
-POLE_BASE_Y     equ 9*TILE          ; top of the base block (feet y at the bottom)
+POLE_BASE_Y     equ 9*TILE          ; top of the base block 
 CASTLE_X        equ 58*TILE
 
-; colours from the default VGA palette (0..15); art colours come from art.inc
+; colours from the default VGA palette 
+
 COL_BLACK       equ 0
 COL_GRAY        equ 8
 COL_GREEN       equ 10
@@ -27,6 +27,7 @@ COL_YELLOW      equ 14
 COL_WHITE       equ 15
 
 ; tile codes 
+
 T_SKY equ 0
 T_GROUND equ 1
 T_BRICK equ 2
@@ -34,9 +35,10 @@ T_QCOIN equ 3
 T_QMUSH equ 4
 T_EMPTY equ 5
 T_COIN equ 11
-T_POLE equ 12                       ; 12 and 13 (pole top) both count as the flag pole
+T_POLE equ 12                       ; 12 and 13 both count as the flag pole
 
 ; scan codes 
+
 SC_ESC equ 01h
 SC_P equ 19h
 SC_ENTER equ 1Ch
@@ -50,8 +52,9 @@ SC_F1 equ 3Bh
 SC_F2 equ 3Ch
 
 ; physics, 8.8 fixed point, 30 frames per second 
+
 ACCEL equ 0020h
-BRAKE equ 0040h                     ; braking against the motion is faster than ACCEL
+BRAKE equ 0040h                    
 FRICTION equ 0010h
 MAX_WALK equ 0180h
 MAX_RUN equ 0280h
@@ -60,7 +63,7 @@ JUMP_V equ 0FA80h                   ; -5.5
 JUMP_CUT equ 0FE00h                 ; -2.0
 MAX_FALL equ 0400h
 BOUNCE equ 0FD00h                   ; -3.0
-DEATH_HOP equ 0FB1Ah                ; about -4.9 -> rises 48 pixels
+DEATH_HOP equ 0FB1Ah                ; about -4.9 so rises 48 pixels
 GOOMBA_SPD equ 0080h
 KOOPA_SPD equ 00C0h
 SHELL_SPD equ 0300h
@@ -81,7 +84,7 @@ MAX_ACTIVE equ 8
 MAX_ENT equ 12
 COINPOP_FRAMES equ 12
 
-;  entity record (16 bytes)
+;  entity record 
 E_TYPE equ 0
 E_STATE equ 1
 E_X equ 2                           ; word, world pixels
