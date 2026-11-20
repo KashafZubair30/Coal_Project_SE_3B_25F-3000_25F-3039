@@ -6,6 +6,8 @@
 * Kashaf, 25F-3000, modules 1-8 (skeleton and build, video, map and tiles, sprites, frame buffer, camera, keyboard, timer)
 * Noor-ul-Eiman, 25F-3039, modules 9-15 (movement, collision, enemies, blocks and coins, score and HUD, game states, win/lose/exit)
 
+**Honesty note:** The assembly code was written by the team. An AI assistant (Claude) was used to review the code against the project manual, to write the procedure comment blocks, and to help with building and testing.
+
 ## Build and run
 ```
 nasm -f bin -I src/ src/mario.asm -o MARIO.COM -l build.lst      (or run build.bat)
