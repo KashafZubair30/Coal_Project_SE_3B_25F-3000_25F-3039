@@ -1,9 +1,9 @@
-; map.inc  -  Module 3: level map, GetTile / SetTile / SolidAt, DrawTile, DrawMap
-; GetTile(px, py)
-;   purpose : convert a pixel position to the tile code of the WORKING map (row*60 + column with shifts)
+; GetTile
+;   purpose : convert a pixel position to the tile code of the WORKING map
 ;   inputs  : [bp+6] = pixel x, [bp+4] = pixel y, pushed in that order
 ;   outputs : AX = tile code; above or below the map = sky (0), beyond the level sides = solid ground
 ;   changes : AX only (BX and CX are saved); removes its 2 parameters (ret 4)
+
 GetTile:
     push bp
     mov  bp, sp
@@ -35,11 +35,13 @@ GetTile:
     pop  bx
     pop  bp
     ret  4
-; SolidAt(px, py)
-;   purpose : test whether the tile at a pixel position is solid (tile codes 1..10)
+
+; SolidAt
+;   purpose : test whether the tile at a pixel position is solid 
 ;   inputs  : [bp+6] = pixel x, [bp+4] = pixel y
 ;   outputs : AX = 1 when solid, else 0
 ;   changes : AX only; removes its 2 parameters (ret 4)
+
 SolidAt:
     push bp
     mov  bp, sp
@@ -56,11 +58,13 @@ SolidAt:
 .out:
     pop  bp
     ret  4
-; SetTile(tx, ty, code)
+
+; SetTile
 ;   purpose : change one tile of the working map
 ;   inputs  : [bp+8] = tile column tx, [bp+6] = tile row ty, [bp+4] = new tile code
 ;   outputs : map_work changed
 ;   changes : none (AX and BX are saved); removes its 3 parameters (ret 6)
+
 SetTile:
     push bp
     mov  bp, sp
@@ -79,11 +83,13 @@ SetTile:
     pop  ax
     pop  bp
     ret  6
+
 ; ResetMap
 ;   purpose : copy the original map over the working copy with one REP MOVSB
 ;   inputs  : none
 ;   outputs : map_work = map_orig
 ;   changes : none (CX, SI, DI, ES are saved and restored)
+
 ResetMap:
     push cx
     push si
@@ -101,11 +107,13 @@ ResetMap:
     pop  si
     pop  cx
     ret
-; DrawTile(x, y, code)
-;   purpose : draw one 16x16 tile, clipped on the left and right; opaque tiles (1..10) are copied row by row with REP MOVSB, the others go through DrawSprite
+
+; DrawTile
+;   purpose : draw one 16x16 tile, clipped on the left and right
 ;   inputs  : [bp+8] = x (signed), [bp+6] = y, [bp+4] = tile code
 ;   outputs : tile drawn into the frame buffer
 ;   changes : none (pusha/popa, ES saved); removes its 3 parameters (ret 6)
+
 DrawTile:
     push bp
     mov  bp, sp
@@ -172,11 +180,13 @@ DrawTile:
     popa
     pop  bp
     ret  6
+
 ; DrawMap
-;   purpose : draw the visible part of the map: 20 columns + 1 partial one; first column = cam_x / 16, pixel offset = -(cam_x mod 16)
+;   purpose : draw the visible part of the map: 20 columns + 1 partial one
 ;   inputs  : none (reads cam_x and map_work)
 ;   outputs : all non-empty visible tiles drawn into the frame buffer
 ;   changes : none (pusha/popa)
+
 DrawMap:
     pusha
     mov  cx, [cam_x]
@@ -205,7 +215,7 @@ DrawMap:
     push ax                     ; y
     mov  al, [map_work+di]
     xor  ah, ah
-    push ax                     ; code
+    push ax                    
     call DrawTile
 .skip:
     add  di, MAP_W
