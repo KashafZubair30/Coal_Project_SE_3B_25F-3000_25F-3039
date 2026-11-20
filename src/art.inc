@@ -1,4 +1,5 @@
-; art.inc - sprite pixel art, palette and tile graphics
+; for sprite pixel art, palette and tile graphics
+
 PAL_FIRST equ 16
 PAL_COUNT equ 20
 C_SKY equ 16
