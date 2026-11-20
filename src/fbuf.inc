@@ -1,7 +1,5 @@
-; fbuf.inc  -  Module 5: off-screen frame buffer (second 64000-byte segment)
-
 ; InitMemory
-;   purpose : shrink the .COM block to 64 KB (INT 21h AH=4Ah, ES = PSP at program start) and allocate the 64,000-byte frame buffer (INT 21h AH=48h)
+;   purpose : shrink the .COM block to 64 KB  and allocate the 64,000-byte frame buffer 
 ;   inputs  : none (ES must still hold the PSP segment)
 ;   outputs : CF = 0 and fb_seg = segment of the buffer, or CF = 1 on failure
 ;   changes : flags only (AX and BX are saved)
@@ -28,10 +26,11 @@ InitMemory:
     ret
 
 ; ClearFrame
-;   purpose : fill the whole frame buffer with the sky colour using one REP STOSW (two pixels per word, 32000 words)
+;   purpose : fill the whole frame buffer with the sky colour using one REP STOSW 
 ;   inputs  : none (reads fb_seg)
 ;   outputs : frame buffer = sky colour
 ;   changes : none (AX, CX, DI, ES are saved)
+
 ClearFrame:
     push ax
     push cx
@@ -50,7 +49,7 @@ ClearFrame:
     ret
 
 ; FlipScreen
-;   purpose : copy the finished frame buffer to video memory (segment 0A000h) with one REP MOVSW (32000 words)
+;   purpose : copy the finished frame buffer to video memory with one REP MOVSW
 ;   inputs  : none (reads fb_seg)
 ;   outputs : screen shows the frame
 ;   changes : none (AX, CX, SI, DI, DS, ES are saved)
