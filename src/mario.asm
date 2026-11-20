@@ -1,15 +1,13 @@
-; mario.asm  -  Super Mario Engine, EL2003 COAL semester project
-; Module 1: program skeleton.  Single-segment .COM, ORG 100h.
     cpu 286
     bits 16
     org 100h
 
-%include "constants.inc"=
+%include "constants.inc"
 
 start:
     cld
     mov  sp, 0FFFEh
-    call InitMemory              ; frame buffer segment (INT 21h AH=4Ah / 48h)
+    call InitMemory              ; frame buffer segment 
     jc   NoMemory
     call BuildArtTables
     call InitVideo
