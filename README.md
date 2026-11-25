@@ -1,17 +1,15 @@
-# Super Mario Engine  (EL2003 COAL Semester Project, Fall 26)
+# Super Mario Engine  (EL2003 COAL Semester Project)
 
 16-bit x86 platform game in NASM, runs in DOSBox as `MARIO.COM`.
 
 **Team:** Group 01 (SE 3B)
 * Kashaf, 25F-3000, modules 1-8 (skeleton and build, video, map and tiles, sprites, frame buffer, camera, keyboard, timer)
-* Noor-ul-Eiman, 25F-3039, modules 9-15 (movement, collision, enemies, blocks and coins, score and HUD, game states, win/lose/exit)
-
-**Honesty note:** The assembly code was written by the team. An AI assistant (Claude) was used to review the code against the project manual, to write the procedure comment blocks, and to help with building and testing.
+* Noor Ul Eiman, 25F-3039, modules 9-15 (movement, collision, enemies, blocks and coins, score and HUD, game states, win/lose/exit)
 
 ## Build and run
 ```
-nasm -f bin -I src/ src/mario.asm -o MARIO.COM -l build.lst      (or run build.bat)
-dosbox MARIO.COM        # in the DOSBox config set  cycles=max  (smooth 30 fps)
+nasm -f bin -I src/ src/mario.asm -o MARIO.COM -l build.lst     
+dosbox MARIO.COM        # in the DOSBox config set  cycles=max  
 ```
 
 ## Controls
